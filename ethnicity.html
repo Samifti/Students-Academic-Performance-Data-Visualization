@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <title>Data Visualization</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="assets/css/fontawesome.css">
+  <link rel="stylesheet" href="assets/css/templatemo-tale-seo-agency.css">
+  <link rel="stylesheet" href="assets/css/owl.css">
+  <link rel="stylesheet" href="assets/css/animate.css">
+       <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+
+<!--
+
+TemplateMo 582 Tale SEO Agency
+
+https://templatemo.com/tm-582-tale-seo-agency
+
+-->
+</head>
+
+<body>
+
+<!-- ***** Preloader Start ***** -->
+<div id="js-preloader" class="js-preloader">
+  <div class="preloader-inner">
+    <span class="dot"></span>
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+<!-- ***** Preloader End ***** -->
+
+
+
+<!-- ***** Header Area Start ***** -->
+<header class="header-area header-sticky">
+  <div class="container">
+      <div class="row">
+          <div class="col-12">
+              <nav class="main-nav">
+                  <!-- ***** Logo Start ***** -->
+                  <a href="index.html" class="logo">
+                      <img src="assets/images/logo.png" alt="" style="max-width: 112px;">
+                  </a>
+                  <!-- ***** Logo End ***** -->
+                  <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a href="index.html" class="active">Home</a></li>
+                    
+                    <li class="has-sub">
+                        <a href="javascript:void(0)">Visualizations</a>
+                        <ul class="sub-menu">
+                            <li><a href="ethnicity.html">Ethnicity</a></li>
+                            <li><a href="guardian.html">Guardian</a></li>
+                            <li><a href="address.html">Address</a></li>
+                            <li><a href="studyhours.html">Study Hours</a></li>
+                            <li><a href="absence.html">Absence</a></li>
+							<li><a href="job.html">Job</a></li>
+                        </ul>
+                    </li>
+                 
+                </ul>   
+                  <a class='menu-trigger'>
+                      <span>Menu</span>
+                  </a>
+                  <!-- ***** Menu End ***** -->
+              </nav>
+          </div>
+      </div>
+  </div>
+</header>
+<!-- ***** Header Area End ***** -->
+  <div class="page-heading">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-7 align-self-center">
+          <div class="caption  header-text">
+            <h6>Data Visualization</h6>
+            <div class="line-dec"></div>
+            <h4>Does your <em>Ethnicity/Race</em> affect student performance <em>?</em></h4>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <img src="assets/images/faqs-image.jpg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://d3js.org/d3.v4.js"></script>
+  
+  <!-- Add 2 buttons -->
+  
+  <button class="button-36" onclick="update(data1)">Female</button>
+  <button class="button-36" onclick="update(data2)">Male</button>
+
+  <!-- Create a div where the graph will take place -->
+  <div id="my_dataviz"></div>
+  
+  
+  <script>
+  
+  // Ethnicity affect performance divided into male female.
+  var data1 = [
+     {group: "Group A", value: 75.195},
+     {group: "Group B", value: 86.175},
+     {group: "Group C", value: 90.21},
+     {group: "Group D", value: 91.87},
+     {group: "Group E", value: 92.095}
+  ];
+  
+  var data2 = [
+     {group: "Group A", value: 76.22},
+     {group: "Group B", value: 82.5},
+     {group: "Group C", value: 86.255},
+     {group: "Group D", value: 84.635},
+     {group: "Group E", value: 86.1}
+  ];
+  
+  
+  // set the dimensions and margins of the graph
+  var margin = {top: 30, right: 30, bottom: 70, left: 60},
+      width = 560 - margin.left - margin.right,
+      height = 700 - margin.top - margin.bottom;
+  
+  // append the svg object to the body of the page
+  var svg = d3.select("#my_dataviz")
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+  
+  // Initialize the X axis
+  var x = d3.scaleBand()
+    .range([ 0, width ])
+    .padding(0.4);
+  var xAxis = svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+  
+  // Initialize the Y axis
+  var y = d3.scaleLinear()
+    .range([ height, 0]);
+  var yAxis = svg.append("g")
+    .attr("class", "myYaxis")
+  
+    // Add X axis label:
+  svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("x", width-200)
+      .attr("y", height + margin.top + 20)
+      .text("Ethnicity (Group)");
+  
+  // Y axis label:
+  svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -margin.left+20)
+      .attr("x", -margin.top -200)
+      .text("Average Score")
+  
+  // A function that create / update the plot for a given variable:
+  function update(data) {
+  
+    
+    // Update the X axis
+    x.domain(data.map(function(d) { return d.group; }))
+    xAxis.call(d3.axisBottom(x))
+  
+    // Update the Y axis
+    y.domain([0, d3.max(data, function(d) { return d.value }) ]);
+    yAxis.transition().duration(1000).call(d3.axisLeft(y));
+  
+    // Create the u variable
+    var u = svg.selectAll("rect")
+      .data(data)
+  
+    u
+      .enter()
+      .append("rect") // Add a new rect for each new elements
+      .merge(u) // get the already existing elements as well
+      .transition() // and apply changes to all of them
+      .duration(1000)
+        .attr("x", function(d) { return x(d.group); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { return height - y(d.value); })
+        .attr("fill", "#BA55D3")
+    // create a tooltip
+    var Tooltip = d3.select("#div_template")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(g) {
+    Tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  var mousemove = function(g) {
+    Tooltip
+      .html("The exact value of<br>this cell is: " + d.value)
+      .style("left", (d3.mouse(this)[0]+70) + "px")
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+  var mouseleave = function(g) {
+    Tooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+  }
+
+
+  // add the squares
+  svg.selectAll()
+    .data(data, function(d) {return d.group+':'+d.variable;})
+    .enter()
+    .append("rect")
+      .attr("x", function(d) { return x(d.group) })
+      .attr("y", function(d) { return y(d.variable) })
+      .attr("rx", 4)
+      .attr("ry", 4)
+      .attr("width", x.bandwidth() )
+      .attr("height", y.bandwidth() )
+      .style("fill", function(d) { return myColor(d.value)} )
+      .style("stroke-width", 4)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
+
+    // If less group in the new dataset, I delete the ones not in use anymore
+    u
+      .exit()
+      .remove()
+  }
+  
+  // Initialize the plot with the first dataset
+  update(data1)
+
+  
+  
+  </script>
+  <h1>How different <em>Ethnicity</em> effect students Performance</h1>
+  <p> The purpose of this particular graph would be to analyze if race or ethnicity is a factor in student performance. Is racism causing some Racial groups to perform poorly or not. A Column graph was implemented for this where the X axis are different racial groups classified by alphabets, where as the Y axis are the students GPA. In order to diffrentiate how both genders are affected differently in this visualization 2 separate Male and Female tabs were created to get a better depiction of this study. </p>
+  
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+  <script src="assets/js/tabs.js"></script>
+  <script src="assets/js/popup.js"></script>
+  <script src="assets/js/custom.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <title>Data Visualization</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="assets/css/templatemo-tale-seo-agency.css">
+    <link rel="stylesheet" href="assets/css/owl.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="style.css">
+ <script src="https://d3js.org/d3.v4.js"></script>
+
+<!--
+
+TemplateMo 582 Tale SEO Agency
+
+https://templatemo.com/tm-582-tale-seo-agency
+
+-->
+  </head>
+
+<body>
+
+  <!-- ***** Preloader Start ***** -->
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+  <!-- ***** Preloader End ***** -->
+
+  
+
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="index.html" class="logo">
+                        <img src="assets/images/logo.png" alt="" style="max-width: 112px;">
+                    </a>
+                    <!-- ***** Logo End ***** -->
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav">
+                      <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+                      
+                      <li class="has-sub">
+                          <a href="javascript:void(0)">Visualizations</a>
+                          <ul class="sub-menu">
+                              <li><a href="ethnicity.html">Ethnicity</a></li>
+                              <li><a href="guardian.html">Guardian</a></li>
+                              <li><a href="address.html">Address</a></li>
+                              <li><a href="studyhours.html">Study Hours</a></li>
+                              <li><a href="absence.html">Absence</a></li>
+							  <li><a href="job.html">Job</a></li>
+                          </ul>
+                      </li>
+                   
+                  </ul>   
+                    <a class='menu-trigger'>
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+  </header>
+  <div class="page-heading">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-7 align-self-center">
+          <div class="caption  header-text">
+            <h6>Data Visualization</h6>
+            <div class="line-dec"></div>
+            <h4>Is the type of <em>Job</em> a factor in the students performance <em>?</em></h4>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <img src="assets/images/faqs-image.jpg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://d3js.org/d3.v4.js"></script>
+  
+  <div id="my_dataviz"></div>
+  <script>
+  
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 20, left: 50},
+    width = 660 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Parse the Data
+d3.csv("group.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.group)}).keys()
+
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.3])
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSize(0));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  // text label for the y axis
+  svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Average Score (%)");      
+
+ 
+
+  // Another scale for subgroup position?
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05])
+
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#1cc3e2','#CF9032', '#CD7E2A', '#6C3622', '#802621'])
+
+
+  // Show the bars
+  svg.append("g")
+    .selectAll("g")
+    // Enter in data = loop group per group
+    .data(data)
+    .enter()
+    .append("g")
+      .attr("transform", function(d) { return "translate(" + x(d.group) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("width", xSubgroup.bandwidth())
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("fill", function(d) { return color(d.key); });
+      
+
+        // Handmade legend
+  svg.append("circle").attr("cx",300).attr("cy",10).attr("r", 6).style("fill", "#1cc3e2")
+  svg.append("circle").attr("cx",300).attr("cy",30).attr("r", 6).style("fill", "#CF9032")
+  svg.append("circle").attr("cx",300).attr("cy",50).attr("r", 6).style("fill", "#CD7E2A")
+  svg.append("circle").attr("cx",300).attr("cy",70).attr("r", 6).style("fill", "#6C3622")
+  svg.append("circle").attr("cx",300).attr("cy",90).attr("r", 6).style("fill", "#802621")
+
+  svg.append("text").attr("x", 320).attr("y", 10).text("Teacher").style("font-size", "15px").attr("alignment-baseline","middle")
+  svg.append("text").attr("x", 320).attr("y", 30).text("Services").style("font-size", "15px").attr("alignment-baseline","middle")
+  svg.append("text").attr("x", 320).attr("y", 50).text("Other").style("font-size", "15px").attr("alignment-baseline","middle")
+  svg.append("text").attr("x", 320).attr("y", 70).text("Health").style("font-size", "15px").attr("alignment-baseline","middle")
+  svg.append("text").attr("x", 320).attr("y", 90).text("At Home").style("font-size", "15px").attr("alignment-baseline","middle")
+})
+// Call function to enable highlight on initial bars
+    enable_highlight();
+
+    function enable_highlight(){
+        svg.selectAll("rect")
+           .data(data)
+           .on("mouseover", function(d){
+                d3.select(this)
+                  .transition()
+                  .attr("fill", "orange");
+           
+
+                var xPosition = parseFloat(d3.select(this).attr("x"));
+                var yPosition = parseFloat(d3.select(this).attr("y"));
+
+                svg.append("text")
+                   .attr("opacity", "0.0")
+                   .transition()
+                   .duration(200)
+                   .attr("opacity", "1.0")
+                   .attr("id", "tooltip")
+                   .attr("text-anchor", "middle")
+                   .attr("font-size", "11px")
+                   .attr("font-weight", "bold")
+                   .attr("x", xPosition + Math.floor(xScale.bandwidth()/2))
+                   .attr("y", yPosition + 14)
+                   .text(d);
+
+           })
+           .on("mouseout", function(){
+                d3.select(this)
+                  .transition()
+                  .attr("fill", "blue");
+
+                d3.select("#tooltip").remove();
+
+           })
+           
+           ;
+       }
+  
+  </script>
+  <h1><em>Parents Job</em> VS Student Performance</h1>
+  <p> For this graph an interesting approach is used. A bar graph is used to differentiate on how the occupation of each parent on the students performance. Later teh occupations are divide into 3 different types and added tot he graph after assignin each a different color.</p>
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+  <script src="assets/js/tabs.js"></script>
+  <script src="assets/js/popup.js"></script>
+  <script src="assets/js/custom.js"></script>
+
+  </body>
+</html>
